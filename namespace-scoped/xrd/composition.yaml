@@ -100,3 +100,17 @@ spec:
             status:
               ready: {{ and (eq (.observed.resources.database | getResourceCondition "Synced").Status "True") (eq (.observed.resources.user | getResourceCondition "Synced").Status "True") }}
               connectionSecret: {{ printf "%s-connection-secret" $dbName }}
+            ---
+            apiVersion: mysql.sql.m.crossplane.io/v1alpha1
+            kind: ProviderConfig
+            metadata:
+              name: mysql-cfg
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: provider-cfg
+                gotemplating.fn.crossplane.io/ready: "True"
+            spec:
+              credentials:
+                source: MySQLConnectionSecret
+                connectionSecretRef:
+                  name: db-conn
+              tls: preferred
